@@ -50,8 +50,11 @@ Route::get('migrate', function () {
 
 Route::get('optimize', function () {
     Artisan::call('optimize:clear');
+    Artisan::call('storage:link');
     dump('Optimization Done');
 });
+
+
 
 Route::get('file', function () {
 

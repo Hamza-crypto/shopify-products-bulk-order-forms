@@ -85,7 +85,7 @@
                                     }
                                 @endphp
                                 <tr>
-                                    <td>{{ $loop->index }}</td>
+                                    <td>{{ $loop->index + 1 }}</td>
                                     <td>
                                         @if ($product['image_src'])
                                             <img src="{{ $product['image_src'] }}" alt="{{ $product['title'] }}"
