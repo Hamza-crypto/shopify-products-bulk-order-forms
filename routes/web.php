@@ -50,8 +50,15 @@ Route::get('migrate', function () {
 
 Route::get('optimize', function () {
     Artisan::call('optimize:clear');
-    Artisan::call('storage:link');
     dump('Optimization Done');
+});
+
+Route::get('storage-link', function () {
+    $target = storage_path('app/public');
+    $linkfolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+    symlink($target, $linkfolder);
+
+    dump('Link Created');
 });
 
 
