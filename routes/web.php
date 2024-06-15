@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,17 +58,34 @@ Route::get('optimize', function () {
 });
 
 Route::get('file', function () {
-    // Ensure the directory exists
-    $directory = storage_path('app/attachments');
-    if (!is_dir($directory)) {
-        mkdir($directory, 0755, true);
-    }
 
+
+    $url = Storage::disk('public')->url("selected_products_1718441984" . ".csv");
+    dd($url);
     // Generate CSV file
     $fileName = 'selected_products_' . now()->timestamp . '.csv';
-    $filePath = $directory . '/' . $fileName;
-    $file = fopen($filePath, 'w');
+    $filePath = 'attachments/' . $fileName;
+
+    // Add CSV headers and data
+    $csvData = [];
+    $csvData[] = ['Title', 'Price', 'Quantity', 'SKU'];
+
+
+    $csv = '';
+    foreach ($csvData as $row) {
+        $csv .= implode(',', $row) . "\n";
+    }
+
+
+    // Store the CSV file in the public disk
+    Storage::disk('public')->put($filePath, $csv);
+
+    // Generate the download link
+    $downloadLink = Storage::disk('public')->url($filePath);
+    dd($downloadLink);
 });
+
+
 
 require __DIR__.'/auth.php';
 

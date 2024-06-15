@@ -6,8 +6,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductUpload;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\CustomerSubmitRequest;
+use App\Jobs\SendProductSelectionEmail;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
@@ -65,54 +65,58 @@ class CustomerController extends Controller
         });
 
 
-        // Ensure the directory exists
-        $directory = storage_path('app/attachments');
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-
         // Generate CSV file
         $fileName = 'selected_products_' . now()->timestamp . '.csv';
-        $filePath = storage_path('app/attachments/' . $fileName);
-        $file = fopen($filePath, 'w');
+        $filePath = 'attachments/' . $fileName;
 
-
-        // Add CSV headers
-        fputcsv($file, ['Title', 'Price', 'Quantity', 'SKU']);
-
-        // Add CSV data
+        // Add CSV headers and data
+        $csvData = [];
+        $csvData[] = ['Title', 'Price', 'Quantity', 'SKU'];
         foreach ($selectedProducts as $product) {
-            fputcsv($file, [
+            $csvData[] = [
                 $product['title'],
                 $product['price'],
                 $product['quantity'],
                 $product['sku'],
-            ]);
+            ];
         }
 
-        fclose($file);
 
+        // Store the CSV file in the public disk
+        Storage::disk('public')->put($filePath, $this->arrayToCsv($csvData));
 
         // Generate the download link
-        $downloadLink = Storage::url($filePath);
+        $downloadLink = Storage::disk('public')->url($filePath);
+
+
+        // Ensure the file exists at the generated link
+        if (!Storage::disk('public')->exists($filePath)) {
+            return back()->with('error', 'Failed to create CSV file.');
+        }
+
 
         // Prepare email data
         $emailData = [
             'customerInfo' => $customerInfo,
             'unique_id' => $request->input('unique_id'),
-             'downloadLink' => $downloadLink,
+            'downloadLink' => $downloadLink,
         ];
 
 
-        // Send email to admin with attachment
-        Mail::send('emails.admin', $emailData, function ($message) use ($customerInfo, $filePath) {
-            $message->to('admin@example.com')
-                    ->subject('New Product Selection from ' . $customerInfo['name'])
-                    ->attach($filePath);
-        });
+        // Dispatch the job to send the email
+        SendProductSelectionEmail::dispatch($emailData);
+
 
         // Redirect back with a success message
         return back()->with('success', 'Your selection has been submitted successfully!');
+    }
+
+    private function arrayToCsv(array $array)
+    {
+        $csv = '';
+        foreach ($array as $row) {
+            $csv .= implode(',', $row) . "\n";
+        }
+        return $csv;
     }
 }
