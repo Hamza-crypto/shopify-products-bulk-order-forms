@@ -19,10 +19,6 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/dashboard', function () {
     return view('pages.dashboard.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -94,7 +90,7 @@ Route::get('file', function () {
 require __DIR__.'/auth.php';
 
 
-Route::get('/admin/upload', [AdminController::class, 'showUploadForm'])->name('admin.upload.form');
+Route::get('/', [AdminController::class, 'showUploadForm'])->name('admin.upload.form');
 Route::post('/admin/upload', [AdminController::class, 'uploadProducts'])->name('admin.upload');
 Route::get('/products/{unique_id}', [CustomerController::class, 'showProducts'])->name('customer.products');
 Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->name('customer.submit');

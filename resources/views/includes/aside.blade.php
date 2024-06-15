@@ -10,8 +10,8 @@
             <li class="sidebar-header">
                 General
             </li>
-            <li class="sidebar-item {{ request()->is('dashboard') ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ route('dashboard') }}">
+            <li class="sidebar-item {{ request()->is('/') ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ route('admin.upload.form') }}">
                     <i class="align-middle" data-feather="sliders"></i>
                     <span class="align-middle">Dashboard</span>
                 </a>
