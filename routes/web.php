@@ -58,6 +58,8 @@ Route::get('storage-link', function () {
     $linkfolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
     symlink($target, $linkfolder);
 
+    dump($target, $linkfolder);
+
     dump('Link Created');
 });
 
