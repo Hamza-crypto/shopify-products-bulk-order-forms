@@ -1,64 +1,118 @@
 <?php
 
+
+// app/Http/Controllers/CustomerController.php
+
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
-use App\Models\Leaderboard;
-use App\Notifications\GeneralNotification;
-use Illuminate\Support\Facades\Notification;
-use NotificationChannels\Telegram\TelegramChannel;
+use App\Models\ProductUpload;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\CustomerSubmitRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
-    public function store($data)
+    public function showProducts($unique_id)
     {
-        // Extract data from the input array
-        $customerData = [
-            'customer_id' => $data['id'],
-            'name' => $this->getFullName($data['properties']),
-            'email' => $data['properties']['email'],
-            'agent' => isset($data['properties']['agent']) ? $data['properties']['agent'] : '',
-            'leads' => isset($data['properties']['of_applicants']) ? (int)$data['properties']['of_applicants'] : 0,
-            'tab' => isset($data['properties']['zap_types']) ? $data['properties']['zap_types'] : 'No Cost ACA',
-            'status' => isset($data['properties']['status']) ? $data['properties']['status'] : 'AOR SWITCH',
-            'date' => !empty($data['properties']['date']) ? $data['properties']['date'] : null
-        ];
+        $productUpload = ProductUpload::where('unique_id', $unique_id)->firstOrFail();
+        $filePath = storage_path('app/' . $productUpload->file_path);
+        $file = fopen($filePath, 'r');
 
-        // Check if the customer already exists in the database
-        $existingCustomer = Customer::where('customer_id', $customerData['customer_id'])->first();
+        $header = fgetcsv($file);
+        $products = [];
+        $productHandles = [];
 
-        if ($existingCustomer) {
-            //If customer agent has been updated
-            if($customerData['agent'] != $existingCustomer->agent) {
-                Leaderboard::where('agent', $existingCustomer->agent)->delete();
+        while ($row = fgetcsv($file)) {
+            $data = array_combine($header, $row);
+            $handle = $data['Handle'];
+
+            if (!isset($productHandles[$handle])) {
+                $productHandles[$handle] = [
+                    'handle' => $data['Handle'] ?? '',
+                    'title' => $data['Title'] ?? '',
+
+
+                    'type' => $data['Type'] ?? '',
+                    'sku' => $data['Variant SKU'] ?? '',
+
+
+
+                    'price' => $data['Variant Price'] ?? '',
+                    'image_src' => $data['Image Src'],
+                ];
+            } elseif (isset($data['Image Src']) && $data['Image Src']) {
+                $productHandles[$handle]['image_src'] = $data['Image Src'];
             }
-            // Update the existing customer's "of_applicants" field
-            $existingCustomer->update($customerData);
-
-            $data_array['msg'] = sprintf('Customer updated: %s %s', $customerData['agent'], $customerData['leads']);
-
-
-
-        } else {
-            // Create a new customer record
-            Customer::create($customerData);
-
-            $data_array['msg'] = sprintf('New customer created: %s %s', $customerData['agent'] ?? 'agent', $customerData['leads'] ?? 0);
         }
-        //Notification::route(TelegramChannel::class, '')->notify(new GeneralNotification($data_array));
 
+        fclose($file);
+
+        return view('pages.customer.products', ['products' => $productHandles, 'unique_id' => $unique_id]);
     }
 
-
-    private function getFullName($properties)
+    public function submitProducts(CustomerSubmitRequest $request)
     {
-        if($properties['customer_name'] != null) {
-            return $properties['customer_name'];
+        // Extract customer information
+        $customerInfo = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+        ];
+
+        // Extract and filter selected products
+        $selectedProducts = array_filter($request->input('products'), function ($product) {
+            return isset($product['selected']);
+        });
+
+
+        // Ensure the directory exists
+        $directory = storage_path('app/attachments');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
         }
 
-        $firstName = isset($properties['firstname']) ? $properties['firstname'] : '';
-        $lastName = isset($properties['lastname']) ? $properties['lastname'] : '';
 
-        return trim($firstName . ' ' . $lastName);
+        // Generate CSV file
+        $fileName = 'selected_products_' . now()->timestamp . '.csv';
+        $filePath = storage_path('app/attachments/' . $fileName);
+        $file = fopen($filePath, 'w');
+
+
+        // Add CSV headers
+        fputcsv($file, ['Title', 'Price', 'Quantity', 'SKU']);
+
+        // Add CSV data
+        foreach ($selectedProducts as $product) {
+            fputcsv($file, [
+                $product['title'],
+                $product['price'],
+                $product['quantity'],
+                $product['sku'],
+            ]);
+        }
+
+        fclose($file);
+
+
+        // Generate the download link
+        $downloadLink = Storage::url($filePath);
+
+        // Prepare email data
+        $emailData = [
+            'customerInfo' => $customerInfo,
+            'unique_id' => $request->input('unique_id'),
+             'downloadLink' => $downloadLink,
+        ];
+
+
+        // Send email to admin with attachment
+        Mail::send('emails.admin', $emailData, function ($message) use ($customerInfo, $filePath) {
+            $message->to('admin@example.com')
+                    ->subject('New Product Selection from ' . $customerInfo['name'])
+                    ->attach($filePath);
+        });
+
+        // Redirect back with a success message
+        return back()->with('success', 'Your selection has been submitted successfully!');
     }
 }

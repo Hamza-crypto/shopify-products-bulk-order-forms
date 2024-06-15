@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\GuruController;
-use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Artisan;
@@ -56,11 +56,23 @@ Route::get('optimize', function () {
     dump('Optimization Done');
 });
 
+Route::get('file', function () {
+    // Ensure the directory exists
+    $directory = storage_path('app/attachments');
+    if (!is_dir($directory)) {
+        mkdir($directory, 0755, true);
+    }
 
-
-Route::controller(LeaderboardController::class)->group(function () {
-    Route::get('leaderboard', 'index')->middleware('checkAppKey')->name('leaderboard');
-    Route::get('leaderboard/spanish', 'leader_spanish')->middleware('checkAppKey');
+    // Generate CSV file
+    $fileName = 'selected_products_' . now()->timestamp . '.csv';
+    $filePath = $directory . '/' . $fileName;
+    $file = fopen($filePath, 'w');
 });
 
 require __DIR__.'/auth.php';
+
+
+Route::get('/admin/upload', [AdminController::class, 'showUploadForm'])->name('admin.upload.form');
+Route::post('/admin/upload', [AdminController::class, 'uploadProducts'])->name('admin.upload');
+Route::get('/products/{unique_id}', [CustomerController::class, 'showProducts'])->name('customer.products');
+Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->name('customer.submit');

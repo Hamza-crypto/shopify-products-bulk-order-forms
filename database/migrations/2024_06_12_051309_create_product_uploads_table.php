@@ -10,13 +10,14 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create('leaderboards', function (Blueprint $table) {
+
+        Schema::create('product_uploads', function (Blueprint $table) {
             $table->id();
-            $table->string('agent');
-            $table->string('leads')->default(0);
-            $table->string('tab')->nullable();
+            $table->string('unique_id')->unique();
+            $table->string('file_path');
             $table->timestamps();
         });
+
     }
 
     /**
@@ -24,6 +25,6 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('leaderboards');
+        Schema::dropIfExists('product_uploads');
     }
 };

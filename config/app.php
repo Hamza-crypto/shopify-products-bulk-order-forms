@@ -70,8 +70,8 @@ return [
     |
     */
 
-    'timezone' => 'America/New_York',
-    //'timezone' => 'Asia/Karachi',
+    // 'timezone' => 'Asia/Qatar',
+    'timezone' => 'Asia/Karachi',
 
     /*
     |--------------------------------------------------------------------------
