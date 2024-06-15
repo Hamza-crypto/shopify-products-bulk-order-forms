@@ -94,5 +94,3 @@ Route::get('/admin/upload', [AdminController::class, 'showUploadForm'])->name('a
 Route::post('/admin/upload', [AdminController::class, 'uploadProducts'])->name('admin.upload');
 Route::get('/products/{unique_id}', [CustomerController::class, 'showProducts'])->name('customer.products');
 Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->name('customer.submit');
-
-//
