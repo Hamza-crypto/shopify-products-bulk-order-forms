@@ -59,8 +59,12 @@ Route::get('optimize', function () {
 
 Route::get('file', function () {
 
+    // Generate CSV file
+    $fileName = 'selected_products_1718463081'  . '.csv';
+    $filePath = 'attachments/' . $fileName;
 
-    $url = Storage::disk('public')->url("selected_products_1718441984" . ".csv");
+
+    $url = Storage::disk('public')->url($filePath);
     dd($url);
     // Generate CSV file
     $fileName = 'selected_products_' . now()->timestamp . '.csv';

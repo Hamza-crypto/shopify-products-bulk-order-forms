@@ -4,11 +4,11 @@
 <html>
 
 <head>
-    <title>New Product Selection</title>
+    <title>New Order</title>
 </head>
 
 <body>
-    <h1>New Product Selection</h1>
+    <h1>New Order</h1>
     <p>Customer Information:</p>
     <ul>
         <li>Name: {{ $customerInfo['name'] }}</li>
