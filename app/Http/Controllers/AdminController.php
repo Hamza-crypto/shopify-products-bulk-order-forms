@@ -24,6 +24,7 @@ class AdminController extends Controller
         ]);
 
         $file = $request->file('file');
+        $domain = $request->input('domain');
         $filePath = $file->store('uploads');
 
         $uniqueId = Str::uuid();
@@ -31,6 +32,7 @@ class AdminController extends Controller
         ProductUpload::create([
             'unique_id' => $uniqueId,
             'file_path' => $filePath,
+            'domain' => $domain,
         ]);
 
         $url = sprintf("<strong>%s</strong>", route('customer.products', ['unique_id' => $uniqueId]));

@@ -15,6 +15,7 @@ return new class () extends Migration {
             $table->id();
             $table->string('unique_id')->unique();
             $table->string('file_path');
+            $table->string('domain');
             $table->timestamps();
         });
 

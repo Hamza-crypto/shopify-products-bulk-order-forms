@@ -37,7 +37,7 @@ class SendProductSelectionEmail implements ShouldQueue
     public function handle()
     {
         Mail::send('emails.admin', $this->emailData, function ($message) {
-            $message->to('admin@example.com')
+            $message->to(env('ADMIN_EMAIL'))
                     ->subject('New Order from ' . $this->emailData['customerInfo']['name'] ?? '');
         });
     }

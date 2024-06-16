@@ -47,7 +47,7 @@ class CustomerController extends Controller
 
         fclose($file);
 
-        return view('pages.customer.products', ['products' => $productHandles, 'unique_id' => $unique_id]);
+        return view('pages.customer.products', ['products' => $productHandles, 'unique_id' => $unique_id, 'domain' => $productUpload->domain]);
     }
 
     public function submitProducts(CustomerSubmitRequest $request)
@@ -101,7 +101,6 @@ class CustomerController extends Controller
             'unique_id' => $request->input('unique_id'),
             'downloadLink' => $downloadLink,
         ];
-
 
         // Dispatch the job to send the email
         SendProductSelectionEmail::dispatch($emailData);

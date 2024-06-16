@@ -94,7 +94,9 @@
                                             No Image
                                         @endif
                                     </td>
-                                    <td>{{ $product['title'] }}</td>
+
+                                    <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
+                                            target="_blank">{{ $product['title'] }}</a></td>
                                     <td>{{ $product['price'] }}</td>
 
                                     <td>

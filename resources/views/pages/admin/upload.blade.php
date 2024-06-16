@@ -45,7 +45,7 @@
                         <div class="mb-3">
                             <label class="form-label">Enter Website URL</label>
                             <div>
-                                <input type="text" class="form-control" placeholder="abc.com">
+                                <input type="text" name="domain" class="form-control" placeholder="abc.com">
                             </div>
                         </div>
 
