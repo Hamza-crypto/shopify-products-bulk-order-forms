@@ -30,13 +30,9 @@ class CustomerController extends Controller
                 $productHandles[$handle] = [
                     'handle' => $data['Handle'] ?? '',
                     'title' => $data['Title'] ?? '',
-
-
+                    'description' => $data['Body (HTML)'] ?? '',
                     'type' => $data['Type'] ?? '',
                     'sku' => $data['Variant SKU'] ?? '',
-
-
-
                     'price' => $data['Variant Price'] ?? '',
                     'image_src' => $data['Image Src'],
                 ];
@@ -81,7 +77,6 @@ class CustomerController extends Controller
             ];
         }
 
-
         // Store the CSV file in the public disk
         Storage::disk('public')->put($filePath, $this->arrayToCsv($csvData));
 
@@ -110,11 +105,18 @@ class CustomerController extends Controller
         return back()->with('success', 'Your selection has been submitted successfully!');
     }
 
-    private function arrayToCsv(array $array)
+
+    private function arrayToCsv(array $data)
     {
         $csv = '';
-        foreach ($array as $row) {
-            $csv .= implode(',', $row) . "\n";
+        foreach ($data as $row) {
+            $escapedRow = array_map(function ($field) {
+                if (strpos($field, ',') !== false || strpos($field, '"') !== false || strpos($field, "\n") !== false) {
+                    $field = '"' . str_replace('"', '""', $field) . '"';
+                }
+                return $field;
+            }, $row);
+            $csv .= implode(',', $escapedRow) . "\n";
         }
         return $csv;
     }

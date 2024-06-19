@@ -20,7 +20,7 @@
 
     <div class="wrapper">
 
-        @include('includes.aside')
+        {{-- @include('includes.aside') --}}
 
         <div class="main">
 

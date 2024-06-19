@@ -72,7 +72,9 @@
                                 <th>#</th>
                                 <th>Image</th>
                                 <th>Title</th>
+                                <th>Description</th>
                                 <th>Price</th>
+                                <th>SKU</th>
                                 <th>Quantity</th>
                                 <th>Select</th>
                             </tr>
@@ -97,10 +99,14 @@
 
                                     <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
                                             target="_blank">{{ $product['title'] }}</a></td>
+
+                                    <td>{!! $product['description'] !!}</td>
+
                                     <td>{{ $product['price'] }}</td>
+                                    <td>{{ $product['sku'] }}</td>
 
                                     <td>
-                                        <input type="text" name="products[{{ $loop->index }}][quantity]"
+                                        <input type="number" name="products[{{ $loop->index }}][quantity]"
                                             class="form-control" value="1">
                                     </td>
                                     <td>
