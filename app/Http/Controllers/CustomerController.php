@@ -35,6 +35,7 @@ class CustomerController extends Controller
                     'sku' => $data['Variant SKU'] ?? '',
                     'price' => $data['Variant Price'] ?? '',
                     'image_src' => $data['Image Src'],
+                    'wholesale_price' => $data['Wholesale Price'] ?? '-',
                 ];
             } elseif (isset($data['Image Src']) && $data['Image Src']) {
                 $productHandles[$handle]['image_src'] = $data['Image Src'];

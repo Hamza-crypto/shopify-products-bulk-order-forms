@@ -74,6 +74,7 @@
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Price</th>
+                                <th>Wholesale Price</th>
                                 <th>SKU</th>
                                 <th>Quantity</th>
                                 <th>Select</th>
@@ -103,6 +104,7 @@
                                     <td>{!! $product['description'] !!}</td>
 
                                     <td>{{ $product['price'] }}</td>
+                                    <td>{{ $product['wholesale_price'] }}</td>
                                     <td>{{ $product['sku'] }}</td>
 
                                     <td>
