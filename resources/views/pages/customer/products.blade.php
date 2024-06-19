@@ -79,11 +79,11 @@
                         </thead>
                         <tbody>
                             @foreach ($products as $product)
-                                @php
-                                    if ($loop->index > 5) {
+                                {{-- @php
+                                    if ($loop->index > 3) {
                                         break;
                                     }
-                                @endphp
+                                @endphp --}}
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>
