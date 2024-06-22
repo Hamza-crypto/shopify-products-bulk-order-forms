@@ -24,22 +24,25 @@ class CustomerController extends Controller
 
         while ($row = fgetcsv($file)) {
             $data = array_combine($header, $row);
-            $handle = $data['Handle'];
 
-            if (!isset($productHandles[$handle])) {
-                $productHandles[$handle] = [
-                    'handle' => $data['Handle'] ?? '',
-                    'title' => $data['Title'] ?? '',
-                    'description' => $data['Body (HTML)'] ?? '',
-                    'type' => $data['Type'] ?? '',
-                    'sku' => $data['Variant SKU'] ?? '',
-                    'price' => $data['Variant Price'] ?? '',
-                    'image_src' => $data['Image Src'],
-                    'wholesale_price' => $data['Wholesale Price'] ?? '-',
-                ];
-            } elseif (isset($data['Image Src']) && $data['Image Src']) {
-                $productHandles[$handle]['image_src'] = $data['Image Src'];
-            }
+            if($data['Status'] != 'active') continue;
+
+            $handle = $data['Handle'];
+            $img = $data['Image Src'];
+
+            $productHandles[$img] = [
+                'handle' => $data['Handle'] ?? '',
+                'title' => $data['Title'] ?? '',
+                'description' => $data['Body (HTML)'] ?? '',
+                'type' => $data['Type'] ?? '',
+                'sku' => $data['Variant SKU'] ?? '',
+                'price' => $data['Variant Price'] ?? '',
+                'image_src' => $data['Image Src'],
+                'wholesale_price' => $data['Wholesale Price'] ?? '-',
+                'status' => $data['Status'] ?? '-',
+                'brand' => $data['Vendor'] ?? 'No brand',
+            ];
+
         }
 
         fclose($file);

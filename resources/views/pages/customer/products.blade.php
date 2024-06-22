@@ -5,6 +5,9 @@
 @section('title', 'Upload Shopify Products File')
 
 @section('styles')
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+
     <style>
         .sticky {
             position: -webkit-sticky;
@@ -17,6 +20,28 @@
     </style>
 
 @endsection
+
+@section('scripts')
+
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            let table = new DataTable('#products', {
+                "responsive": true,
+                "pageLength": 10,
+                "lengthMenu": [
+                    [10, 30, 50, 100 - 1],
+                    [10, 30, 50, 100, "All"]
+                ]
+            });
+        });
+    </script>
+
+@endsection
+
 @section('content')
 
     @if (session('success'))
@@ -66,13 +91,14 @@
 
 
                     <h1>Products</h1>
-                    <table class="table table-bordered mt-3">
+                    <table class="table table-bordered mt-3" id="products">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Image</th>
                                 <th>Title</th>
                                 <th>Description</th>
+                                <th>Brand</th>
                                 <th>Price</th>
                                 <th>Wholesale Price</th>
                                 <th>SKU</th>
@@ -83,7 +109,7 @@
                         <tbody>
                             @foreach ($products as $product)
                                 {{-- @php
-                                    if ($loop->index > 3) {
+                                    if ($loop->index > 10) {
                                         break;
                                     }
                                 @endphp --}}
@@ -99,10 +125,10 @@
                                     </td>
 
                                     <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
-                                            target="_blank">{{ $product['title'] }}</a></td>
+                                            target="_blank">{{ $product['title'] }} </br> </a></td>
 
                                     <td>{!! $product['description'] !!}</td>
-
+                                    <td>{{ $product['brand'] }}</td>
                                     <td>{{ $product['price'] }}</td>
                                     <td>{{ $product['wholesale_price'] }}</td>
                                     <td>{{ $product['sku'] }}</td>
