@@ -101,7 +101,6 @@
                                 <th>Description</th>
                                 <th>Brand</th>
                                 <th>Price</th>
-                                <th>Wholesale Price</th>
                                 <th>SKU</th>
                                 <th>Quantity</th>
                                 <th>Select</th>
@@ -135,8 +134,8 @@
                                         <td>{{ $product['variant'] }}</td>
                                         <td>{!! $product['description'] !!}</td>
                                         <td>{{ $product['brand'] }}</td>
-                                        <td>{{ $product['price'] }}</td>
-                                        <td>{{ $product['wholesale_price'] }}</td>
+                                        <td>{{ $product['price'] }}
+                                        </td>
                                         <td>{{ $product['sku'] }}</td>
 
                                         <td>
