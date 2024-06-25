@@ -20,34 +20,45 @@ class CustomerController extends Controller
 
         $header = fgetcsv($file);
         $products = [];
-        $productHandles = [];
 
+        $counter = 0;
         while ($row = fgetcsv($file)) {
+
             $data = array_combine($header, $row);
 
-            if($data['Status'] != 'active') continue;
+            // if($data['Status'] != 'active') continue;
+            $counter++;
+            // if($counter > 17) break;
 
             $handle = $data['Handle'];
             $img = $data['Image Src'];
+            $sku = $data['Variant SKU'] ?? '';
 
-            $productHandles[$img] = [
-                'handle' => $data['Handle'] ?? '',
-                'title' => $data['Title'] ?? '',
-                'description' => $data['Body (HTML)'] ?? '',
-                'type' => $data['Type'] ?? '',
-                'sku' => $data['Variant SKU'] ?? '',
-                'price' => $data['Variant Price'] ?? '',
-                'image_src' => $data['Image Src'],
-                'wholesale_price' => $data['Wholesale Price'] ?? '-',
-                'status' => $data['Status'] ?? '-',
-                'brand' => $data['Vendor'] ?? 'No brand',
-            ];
+
+            // Check if the product handle already exists
+            if (!isset($products[$handle])) {
+                $products[$handle] = [
+                    'handle' => $data['Handle'] ?? '',
+                    'title' => $data['Title'] ?? '',
+                    'description' => $data['Body (HTML)'] ?? '',
+                    'type' => $data['Type'] ?? '',
+                    'sku' => $sku,
+                    'price' => $data['Variant Price'] ?? '',
+                    'wholesale_price' => $data['Wholesale Price'] ?? '-',
+                    'status' => $data['Status'] ?? '-',
+                    'brand' => $data['Vendor'] ?? 'No brand',
+                    'images' => [], // Initialize images array
+                ];
+            }
+
+            // Add the image to the product's images array
+            $products[$handle]['images'][] = $img;
 
         }
 
         fclose($file);
 
-        return view('pages.customer.products', ['products' => $productHandles, 'unique_id' => $unique_id, 'domain' => $productUpload->domain]);
+        return view('pages.customer.products', ['products' => $products, 'unique_id' => $unique_id, 'domain' => $productUpload->domain]);
     }
 
     public function submitProducts(CustomerSubmitRequest $request)

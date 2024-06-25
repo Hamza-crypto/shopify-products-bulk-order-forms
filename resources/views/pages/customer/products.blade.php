@@ -33,7 +33,7 @@
                 "responsive": true,
                 "pageLength": 10,
                 "lengthMenu": [
-                    [10, 30, 50, 100 - 1],
+                    [10, 30, 50, 100, -1],
                     [10, 30, 50, 100, "All"]
                 ]
             });
@@ -109,23 +109,50 @@
                         <tbody>
                             @foreach ($products as $product)
                                 {{-- @php
-                                    if ($loop->index > 10) {
+
+                                    if ($loop->index < 160) {
+                                        continue;
+                                    }
+                                    if ($loop->index > 180) {
                                         break;
                                     }
+
                                 @endphp --}}
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>
-                                        @if ($product['image_src'])
-                                            <img src="{{ $product['image_src'] }}" alt="{{ $product['title'] }}"
-                                                style="width: 100px; height: auto;">
+                                        @if ($product['images'])
+                                            <div id="carousel-{{ $loop->index }}" class="carousel slide"
+                                                data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    @foreach ($product['images'] as $key => $image)
+                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                            <img class="lazy" src="{{ $image }}"
+                                                                alt="{{ $product['title'] }}"
+                                                                style="width: 200px; height: auto;">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <a class="carousel-control-prev" href="#carousel-{{ $loop->index }}"
+                                                    role="button" data-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next" href="#carousel-{{ $loop->index }}"
+                                                    role="button" data-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </div>
                                         @else
                                             No Image
                                         @endif
                                     </td>
 
                                     <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
-                                            target="_blank">{{ $product['title'] }} </br> </a></td>
+                                            target="_blank">{{ $product['title'] }} </br> </a>{{ $product['handle'] }}
+                                    </td>
+
 
                                     <td>{!! $product['description'] !!}</td>
                                     <td>{{ $product['brand'] }}</td>
