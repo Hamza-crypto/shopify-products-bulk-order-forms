@@ -34,13 +34,20 @@ class CustomerController extends Controller
             // if($counter > 80) break;
             // Check if the product handle already exists
 
+            if(isset($data['Wholesale Price']) && $data['Wholesale Price'] != ""){
+                $price = $data['Wholesale Price'];
+            }
+            else{
+                $price = $data['Variant Price'];
+            }
+
             $products[$handle][] = [
                 'handle' => $data['Handle'] ?? '',
                 'title' => $data['Title'] ?? '',
                 'description' => $data['Body (HTML)'] ?? '',
                 'type' => $data['Type'] ?? '',
                 'sku' => $sku,
-                'price' => $data['Wholesale Price'] != "" ? $data['Wholesale Price'] : $data['Variant Price'] ?? '-',
+                'price' => $price,
                 'status' => $data['Status'] ?? '-',
                 'brand' => $data['Vendor'] ?? 'No brand',
                 'variant_img' => $variantImage,
