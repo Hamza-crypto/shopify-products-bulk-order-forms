@@ -20,44 +20,45 @@ class CustomerController extends Controller
 
         $header = fgetcsv($file);
         $products = [];
-
         $counter = 0;
         while ($row = fgetcsv($file)) {
 
             $data = array_combine($header, $row);
 
-            // if($data['Status'] != 'active') continue;
-            $counter++;
-            // if($counter > 17) break;
-
             $handle = $data['Handle'];
-            $img = $data['Image Src'];
-            $sku = $data['Variant SKU'] ?? '';
+            $variantImage = $data['Variant Image'];
+            $sku = $data['Variant SKU'];
 
-
+            $counter++;
+            // if($counter < 60) continue;
+            // if($counter > 80) break;
             // Check if the product handle already exists
-            if (!isset($products[$handle])) {
-                $products[$handle] = [
-                    'handle' => $data['Handle'] ?? '',
-                    'title' => $data['Title'] ?? '',
-                    'description' => $data['Body (HTML)'] ?? '',
-                    'type' => $data['Type'] ?? '',
-                    'sku' => $sku,
-                    'price' => $data['Variant Price'] ?? '',
-                    'wholesale_price' => $data['Wholesale Price'] ?? '-',
-                    'status' => $data['Status'] ?? '-',
-                    'brand' => $data['Vendor'] ?? 'No brand',
-                    'images' => [], // Initialize images array
-                ];
-            }
 
-            // Add the image to the product's images array
-            $products[$handle]['images'][] = $img;
+            $products[$handle][] = [
+                'handle' => $data['Handle'] ?? '',
+                'title' => $data['Title'] ?? '',
+                'description' => $data['Body (HTML)'] ?? '',
+                'type' => $data['Type'] ?? '',
+                'sku' => $sku,
+                'price' => $data['Variant Price'] ?? '',
+                'wholesale_price' => $data['Wholesale Price'] ?? '-',
+                'status' => $data['Status'] ?? '-',
+                'brand' => $data['Vendor'] ?? 'No brand',
+                'variant_img' => $variantImage,
+                'image' => $variantImage== "" ? $data['Image Src'] : $variantImage,
+                'variant' => $this->get_variants($data)
+            ];
+
+            if (!empty($variant)) {
+            $products[$handle]['variants'][] = $variant;
+        }
+
 
         }
 
         fclose($file);
 
+// dd($products);
         return view('pages.customer.products', ['products' => $products, 'unique_id' => $unique_id, 'domain' => $productUpload->domain]);
     }
 
@@ -134,5 +135,22 @@ class CustomerController extends Controller
             $csv .= implode(',', $escapedRow) . "\n";
         }
         return $csv;
+    }
+
+    private function get_variants($data)
+    {
+        // Collect variant options
+        $variant = '';
+        if (!empty($data['Option1 Value'])) {
+            $variant .= $data['Option1 Value'];
+        }
+        if (!empty($data['Option2 Value'])) {
+            $variant .= ", " . $data['Option2 Value'];
+        }
+        if (!empty($data['Option3 Value'])) {
+            $variant .= ", " .$data['Option3 Value'];
+        }
+
+        return $variant;
     }
 }

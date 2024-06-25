@@ -97,6 +97,7 @@
                                 <th>#</th>
                                 <th>Image</th>
                                 <th>Title</th>
+                                <th>Variant</th>
                                 <th>Description</th>
                                 <th>Brand</th>
                                 <th>Price</th>
@@ -107,75 +108,68 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($products as $product)
-                                {{-- @php
+                            @php
+                                $global_count = 0;
+                            @endphp
+                            @foreach ($products as $single_product)
+                                @foreach ($single_product as $product)
+                                    @php
+                                        if ($single_product[0]['status'] != 'active') {
+                                            continue;
+                                        }
+                                        $global_count++;
+                                    @endphp
 
-                                    if ($loop->index < 160) {
-                                        continue;
-                                    }
-                                    if ($loop->index > 180) {
-                                        break;
-                                    }
+                                    <tr>
+                                        <td>{{ $global_count }}</td>
+                                        <td>
+                                            <img loading="lazy" src="{{ $product['image'] }}" alt="{{ $product['title'] }}"
+                                                style="width: 200px; height: auto;">
 
-                                @endphp --}}
-                                <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
-                                    <td>
-                                        @if ($product['images'])
-                                            <div id="carousel-{{ $loop->index }}" class="carousel slide"
-                                                data-ride="carousel">
-                                                <div class="carousel-inner">
-                                                    @foreach ($product['images'] as $key => $image)
-                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                            <img class="lazy" src="{{ $image }}"
-                                                                alt="{{ $product['title'] }}"
-                                                                style="width: 200px; height: auto;">
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                                <a class="carousel-control-prev" href="#carousel-{{ $loop->index }}"
-                                                    role="button" data-slide="prev">
-                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                    <span class="sr-only">Previous</span>
-                                                </a>
-                                                <a class="carousel-control-next" href="#carousel-{{ $loop->index }}"
-                                                    role="button" data-slide="next">
-                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                    <span class="sr-only">Next</span>
-                                                </a>
-                                            </div>
-                                        @else
-                                            No Image
-                                        @endif
-                                    </td>
+                                        </td>
 
-                                    <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
-                                            target="_blank">{{ $product['title'] }} </br> </a>{{ $product['handle'] }}
-                                    </td>
+                                        <td><a href="{{ $domain }}/products/{{ $product['handle'] }}"
+                                                target="_blank">{{ $product['title'] }} </br> </a>{{ $product['handle'] }}
+                                        </td>
+
+                                        <td>{{ $product['variant'] }}</td>
+                                        <td>{!! $product['description'] !!}</td>
+                                        <td>{{ $product['brand'] }}</td>
+                                        <td>{{ $product['price'] }}</td>
+                                        <td>{{ $product['wholesale_price'] }}</td>
+                                        <td>{{ $product['sku'] }}</td>
+
+                                        <td>
+                                            <input type="number" name="products[{{ $loop->index }}][quantity]"
+                                                class="form-control" value="1">
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="products[{{ $loop->index }}][selected]">
 
 
-                                    <td>{!! $product['description'] !!}</td>
-                                    <td>{{ $product['brand'] }}</td>
-                                    <td>{{ $product['price'] }}</td>
-                                    <td>{{ $product['wholesale_price'] }}</td>
-                                    <td>{{ $product['sku'] }}</td>
+                                            <input type="hidden" name="products[{{ $loop->index }}][title]"
+                                                value="{{ $product['title'] }}">
+                                            <input type="hidden" name="products[{{ $loop->index }}][price]"
+                                                value="{{ $product['price'] }}">
+                                            <input type="hidden" name="products[{{ $loop->index }}][sku]"
+                                                value="{{ $product['sku'] }}">
+                                        </td>
+                                    </tr>
+                                    @php
 
-                                    <td>
-                                        <input type="number" name="products[{{ $loop->index }}][quantity]"
-                                            class="form-control" value="1">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox" name="products[{{ $loop->index }}][selected]">
+                                        // if ($loop->index < 160) {
+                                        //     continue;
+                                        // }
+                                        // if ($loop->index > 180) {
+                                        //     break;
+                                        // }
 
-
-                                        <input type="hidden" name="products[{{ $loop->index }}][title]"
-                                            value="{{ $product['title'] }}">
-                                        <input type="hidden" name="products[{{ $loop->index }}][price]"
-                                            value="{{ $product['price'] }}">
-                                        <input type="hidden" name="products[{{ $loop->index }}][sku]"
-                                            value="{{ $product['sku'] }}">
-                                    </td>
-                                </tr>
+                                        if ($product['variant_img'] == '') {
+                                            // dump('skippinmg after first img');
+                                            break;
+                                        }
+                                    @endphp
+                                @endforeach
                             @endforeach
                             </form>
                         </tbody>
