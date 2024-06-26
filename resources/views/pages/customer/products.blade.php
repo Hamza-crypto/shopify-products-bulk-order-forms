@@ -30,13 +30,40 @@
                 ]
             });
 
+            let selectedRows = {};
+
+            // Function to update the hidden input with selected rows
+            function updateSelectedRows() {
+                let selectedData = JSON.stringify(selectedRows, null, 2); // Pretty print
+                $('#hiddenSelectedRows').val(selectedData);
+                console.log(selectedData);
+
+            }
+
+            // Event listener for checkboxes
+            $(document).on('change', 'input[type="checkbox"][name^="products"]', function() {
+                let row = $(this).closest('tr');
+                let rowIndex = row.find('input[name$="[handle]"]').val();
+
+                if (this.checked) {
+                    selectedRows[rowIndex] = {
+                        quantity: row.find('input[name$="[quantity]"]').val(),
+                        title: row.find('input[name$="[title]"]').val(),
+                        price: row.find('input[name$="[price]"]').val(),
+                        sku: row.find('input[name$="[sku]"]').val(),
+
+                    };
+                } else {
+                    delete selectedRows[rowIndex];
+                }
+                updateSelectedRows();
+            });
+
             // Ensure that form data is captured correctly
-            // $('form').on('submit', function(e) {
-            //     e.preventDefault();
-            //     let formData = $(this).serialize();
-            //     console.log(formData); // For debugging, remove in production
-            //     this.submit();
-            // });
+            $('form').on('submit', function(e) {
+                updateSelectedRows(); // Ensure the hidden input is updated before submission
+                console.log($('#hiddenSelectedRows').val()); // For debugging, remove in production
+            });
         });
     </script>
 @endsection
@@ -61,6 +88,7 @@
                     <form action="{{ route('customer.submit') }}" method="POST">
                         @csrf
                         <input type="hidden" name="unique_id" value="{{ $unique_id }}">
+                        <input type="hidden" id="hiddenSelectedRows" name="hiddenSelectedRows">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" name="name" class="form-control" required>
@@ -126,20 +154,25 @@
                                                             <td>{{ $product['sku'] }}</td>
                                                             <td>
                                                                 <input type="number"
-                                                                    name="products[{{ $loop->index }}][quantity]"
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][quantity]"
                                                                     class="form-control" value="1">
                                                             </td>
                                                             <td>
                                                                 <input type="checkbox"
-                                                                    name="products[{{ $loop->index }}][selected]">
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][selected]">
+
+
                                                                 <input type="hidden"
-                                                                    name="products[{{ $loop->index }}][title]"
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][handle]"
+                                                                    value="{{ $product['handle'] }}">
+                                                                <input type="hidden"
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][title]"
                                                                     value="{{ $product['title'] }}">
                                                                 <input type="hidden"
-                                                                    name="products[{{ $loop->index }}][price]"
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][price]"
                                                                     value="{{ $product['price'] }}">
                                                                 <input type="hidden"
-                                                                    name="products[{{ $loop->index }}][sku]"
+                                                                    name="products[{{ $loop->parent->index }}_{{ $loop->index }}][sku]"
                                                                     value="{{ $product['sku'] }}">
                                                             </td>
                                                         </tr>

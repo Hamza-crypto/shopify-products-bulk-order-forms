@@ -6,8 +6,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductUpload;
-use App\Http\Requests\CustomerSubmitRequest;
 use App\Jobs\SendProductSelectionEmail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
@@ -68,7 +68,7 @@ class CustomerController extends Controller
         return view('pages.customer.products', ['products' => $products, 'unique_id' => $unique_id, 'domain' => $productUpload->domain]);
     }
 
-    public function submitProducts(CustomerSubmitRequest $request)
+    public function submitProducts(Request $request)
     {
         // Extract customer information
         $customerInfo = [
@@ -77,11 +77,12 @@ class CustomerController extends Controller
             'phone' => $request->input('phone'),
         ];
 
-        // Extract and filter selected products
-        $selectedProducts = array_filter($request->input('products'), function ($product) {
-            return isset($product['selected']);
-        });
+        // Decode the hiddenSelectedRows JSON string
+        $selectedProducts = json_decode($request->input('hiddenSelectedRows'), true);
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return back()->with('error', 'Failed to decode selected products.');
+        }
 
         // Generate CSV file
         $fileName = 'selected_products_' . now()->timestamp . '.csv';
