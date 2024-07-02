@@ -5,8 +5,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,3 +108,18 @@ Route::get('/', [AdminController::class, 'showUploadForm'])->name('admin.upload.
 Route::post('/admin/upload', [AdminController::class, 'uploadProducts'])->name('admin.upload');
 Route::get('/products/{unique_id}', [CustomerController::class, 'showProducts'])->name('customer.products');
 Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->name('customer.submit');
+
+//generate_csv_with_images
+Route::post('/upload', [AdminController::class, 'generate_csv_with_images'])->name('admin.generate_directly');
+
+
+Route::get('/send-test-email', function () {
+    $details = [
+        'title' => 'Test Email from Laravel',
+        'body' => 'This is a test email sent using Hostinger SMTP settings in Laravel.'
+    ];
+
+    Mail::to('6793siddique@gmail.com')->send(new \App\Mail\TestMail($details));
+
+    return 'Email Sent!';
+});

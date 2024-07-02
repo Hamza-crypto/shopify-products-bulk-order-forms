@@ -5,10 +5,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Models\ProductUpload;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -39,6 +40,32 @@ class AdminController extends Controller
 
 
         return back()->with('success', 'File uploaded successfully! Share this URL with your customer: ' . $url);
+    }
 
+
+    public function generate_csv_with_images(Request $request)
+    {
+        // Read the CSV file
+        $csvFile = $request->file('csv_file');
+        $products = $this->readCSV($csvFile);
+
+        // Export to Excel
+        return Excel::download(new ProductsExport($products), 'products.xlsx');
+    }
+
+
+    private function readCSV($csvFile)
+    {
+        $fileHandle = fopen($csvFile, 'r');
+        $header = fgetcsv($fileHandle);
+        $products = [];
+
+        while ($row = fgetcsv($fileHandle)) {
+            $products[] = array_combine($header, $row);
+        }
+
+        fclose($fileHandle);
+
+        return $products;
     }
 }
