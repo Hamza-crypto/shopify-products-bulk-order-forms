@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Facades\Session;
 
 class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, WithDrawings, WithColumnWidths, WithStyles
 {
@@ -27,9 +28,15 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
 
     public function array(): array
     {
-        // Add an empty column at the start of each product's data array
+         // Filter and map the products array to include only specific columns
         return array_map(function($product) {
-            return array_merge([''], $product);
+            return [
+                '', // Empty column for 'Image Preview'
+                $product['Title'] ?? '',
+                $product['Body (HTML)'] ?? '',
+                $this->get_variants($product),
+                $this->get_price($product),
+            ];
         }, $this->products);
     }
 
@@ -40,32 +47,36 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
             'Image Preview',
             'Product Name',
             'Description',
+            'Variant Name',
             'Price'
         ];
     }
 
-     private function prepareDrawings()
+    private function prepareDrawings()
     {
         foreach ($this->products as $index => $product) {
             if (!empty($product['Variant Image'])) {
                 $imagePath = $this->getImagePath($product['Variant Image'], $index);
-
-                if ($imagePath) {
-                    $drawing = new Drawing();
-                    $drawing->setName($product['Handle']);
-                    $drawing->setPath($imagePath);
-                    $drawing->setWidth(100);
-                    // $drawing->setheight(150);
-
-                    // Center the image in the cell
-                // $drawing->setOffsetX(5);  // Adjust horizontal offset
-                // $drawing->setOffsetY(5);  // Adjust vertical offset
-
-
-                    $drawing->setCoordinates('A' . ($index + 2));
-                    $this->drawings[] = $drawing;
-                }
             }
+            else{
+                $imagePath = $this->getImagePath($product['Image Src'], $index);
+            }
+            if ($imagePath) {
+                $drawing = new Drawing();
+                $drawing->setName($product['Handle']);
+                $drawing->setPath($imagePath);
+                $drawing->setWidth(100);
+                // $drawing->setheight(150);
+
+                // Center the image in the cell
+            // $drawing->setOffsetX(5);  // Adjust horizontal offset
+            // $drawing->setOffsetY(5);  // Adjust vertical offset
+
+
+                $drawing->setCoordinates('A' . ($index + 2));
+                $this->drawings[] = $drawing;
+            }
+
         }
     }
 
@@ -86,7 +97,6 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
 
     private function downloadImage($url, $filename)
     {
-        \Log::info('Downloaded func called ', ['url' => $url]);
         try {
             $response = Http::get($url);
             if ($response->successful()) {
@@ -146,4 +156,41 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
             $sheet->getRowDimension($index + 2)->setRowHeight(75);  // Set row height for each row with images
         }
     }
+
+    private function get_variants($data)
+    {
+        // Collect variant options
+        $variant = '';
+        if (!empty($data['Option1 Value'])) {
+            $variant .= $data['Option1 Value'];
+        }
+        if (!empty($data['Option2 Value'])) {
+            $variant .= ", " . $data['Option2 Value'];
+        }
+        if (!empty($data['Option3 Value'])) {
+            $variant .= ", " .$data['Option3 Value'];
+        }
+
+        return $variant;
+    }
+
+    private function get_price($data)
+    {
+
+        if (isset($data['Wholesale Price']) && $data['Wholesale Price'] != "") {
+
+            return $data['Wholesale Price'];
+        } else {
+            foreach ($data as $key => $value) {
+                if (stripos($key, 'Price') === 0) {
+                    return $value;
+                }
+            }
+
+            // Default to 'Variant Price' if no matching column found
+            return $data['Variant Price'] ?? null;
+        }
+    }
+
+
 }
