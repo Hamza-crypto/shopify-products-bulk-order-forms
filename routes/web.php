@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +111,8 @@ Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->
 //generate_csv_with_images
 Route::post('/upload', [AdminController::class, 'generate_csv_with_images'])->name('admin.generate_directly');
 
+//store csv file for downloading images
+Route::post('/admin/download_images', [AdminController::class, 'download_images'])->name('admin.upload');
 
 Route::get('/send-test-email', function () {
     $details = [
@@ -122,4 +123,9 @@ Route::get('/send-test-email', function () {
     Mail::to('6793siddique@gmail.com')->send(new \App\Mail\TestMail($details));
 
     return 'Email Sent!';
+});
+
+Route::get('/test', function () {
+    Artisan::call('images:download');
+
 });

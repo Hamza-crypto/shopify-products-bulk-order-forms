@@ -28,7 +28,8 @@
     @endif
 
 
-    {{-- @include('pages.admin.display_products_page_with_images') --}}
+    @include('pages.admin.display_products_page_with_images')
 
     @include('pages.admin.generate_csv_with_img')
+    @include('pages.admin.download_all_images')
 @endsection

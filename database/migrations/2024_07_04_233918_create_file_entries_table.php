@@ -9,22 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('file_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('url', 400)->unique();
-            $table->string('path', 400);
-
+            $table->string('filename');
+            $table->boolean('active')->default(true);
+            $table->integer('processed_rows')->default(0);
+            $table->integer('total_rows')->default(0);
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('file_entries');
     }
 };

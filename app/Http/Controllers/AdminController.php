@@ -6,6 +6,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ProductsExport;
+use App\Models\FileEntry;
 use Illuminate\Http\Request;
 use App\Models\ProductUpload;
 use Illuminate\Support\Str;
@@ -60,12 +61,48 @@ class AdminController extends Controller
         $header = fgetcsv($fileHandle);
         $products = [];
 
+        $temp_product = [];
         while ($row = fgetcsv($fileHandle)) {
+            //dd($row);
+
             $products[] = array_combine($header, $row);
         }
 
         fclose($fileHandle);
 
         return $products;
+    }
+
+    public function download_images(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv',
+        ]);
+
+        $file = $request->file('file');
+        $filePath = $file->store('download_images');
+
+        FileEntry::create([
+            'filename' => $filePath,
+            'total_rows' => $this->countCSVRows($filePath),
+        ]);
+
+        return back()->with('success', 'File uploaded successfully! We will let you know when all images are downloaded.');
+    }
+
+    private function countCSVRows($filePath)
+    {
+        $filePath = storage_path('app/' . $filePath);
+        $handle = fopen($filePath, 'r');
+        $rowCount = 0;
+
+        while (fgetcsv($handle) !== false) {
+            $rowCount++;
+        }
+
+        fclose($handle);
+
+        // Subtract one for the header row
+        return $rowCount - 1;
     }
 }

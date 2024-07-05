@@ -56,10 +56,10 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
     {
         foreach ($this->products as $index => $product) {
             if (!empty($product['Variant Image'])) {
-                $imagePath = $this->getImagePath($product['Variant Image'], $index);
+                $imagePath = $this->getImagePath($product['Variant Image']);
             }
             else{
-                $imagePath = $this->getImagePath($product['Image Src'], $index);
+                $imagePath = $this->getImagePath($product['Image Src']);
             }
             if ($imagePath) {
                 $drawing = new Drawing();
@@ -80,9 +80,9 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
         }
     }
 
-    private function getImagePath($url, $index)
+    private function getImagePath($url)
     {
-        $url .=  "&width=70";
+        $url .=  "&width=100";
         $slug = Str::slug($url);
         $filename = $slug;
 

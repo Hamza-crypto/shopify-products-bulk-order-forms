@@ -12,12 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('guru:token-refresh')
-                    ->hourly();
-
-        $schedule->command('guru:fetch-new-jobs')
-            ->everyFiveMinutes();
-
+        $schedule->command('images:download')->everyMinute();
         $schedule->command('telescope:prune --hours=48')->daily();
     }
 
