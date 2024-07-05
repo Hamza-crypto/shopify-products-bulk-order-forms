@@ -30,9 +30,13 @@
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
                                 style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0"
                                 aria-valuemax="100">
-                                {{ $file->processed_rows }}/{{ $file->total_rows }} ({{ round($percentage, 2) }}%)
+                                ({{ round($percentage, 2) }}%)
                             </div>
+
+
                         </div>
+                        <p>{{ $file->processed_rows }}/{{ $file->total_rows }} ({{ round($percentage, 2) }}%)</p>
+                        <hr>
                     @endforeach
                 </div>
 
