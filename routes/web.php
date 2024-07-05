@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Artisan;
@@ -113,6 +114,7 @@ Route::post('/upload', [AdminController::class, 'generate_csv_with_images'])->na
 
 //store csv file for downloading images
 Route::post('/admin/download_images', [AdminController::class, 'download_images'])->name('admin.upload');
+Route::get('/progress', [DashboardController::class, 'showProgress'])->name('admin.show.progress');
 
 Route::get('/send-test-email', function () {
     $details = [
