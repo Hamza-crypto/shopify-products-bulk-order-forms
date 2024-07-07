@@ -84,7 +84,7 @@ class AdminController extends Controller
 
         FileEntry::create([
             'filename' => $filePath,
-            'total_rows' => $this->countCSVRows($filePath),
+            'total_products' => $this->countCSVRows($filePath),
         ]);
 
         return back()->with('success', 'File uploaded successfully! We will let you know when all images are downloaded.');
@@ -93,16 +93,24 @@ class AdminController extends Controller
     private function countCSVRows($filePath)
     {
         $filePath = storage_path('app/' . $filePath);
-        $handle = fopen($filePath, 'r');
-        $rowCount = 0;
+        $fileHandle = fopen($filePath, 'r');
+        $header = fgetcsv($fileHandle);
 
-        while (fgetcsv($handle) !== false) {
-            $rowCount++;
+        $products = [];
+
+        while (($row = fgetcsv($fileHandle)) !== false) {
+            $product = array_combine($header, $row);
+            $handle = $product['Handle'];
+
+            if (!isset($products[$handle])) {
+                $products[$handle] = [];
+            }
+
+            $products[$handle][] = $product;
         }
 
-        fclose($handle);
+        fclose($fileHandle);
 
-        // Subtract one for the header row
-        return $rowCount - 1;
+        return count($products);
     }
 }

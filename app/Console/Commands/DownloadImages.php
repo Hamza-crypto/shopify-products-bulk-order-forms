@@ -35,7 +35,7 @@ class DownloadImages extends Command
         $batchSize = 70;
         $currentRow = 0;
         $totalDownloads = 0;
-        $totalRows = $fileEntry->total_rows;
+        $total_products = $fileEntry->total_products;
         $fileHandle = fopen($filePath, 'r');
         $header = fgetcsv($fileHandle);
 
@@ -54,7 +54,15 @@ class DownloadImages extends Command
 
         fclose($fileHandle);
 
+        $count = 0;
+
         foreach ($products as $handle => $variants) {
+            $count++;
+
+            if ($count <= $fileEntry->processed_products) {
+                continue;
+            }
+
             $mainProduct = $variants[0];
             $default_column_for_variant_img = "Variant Image";
             $status = strtolower($mainProduct['Status']);
@@ -62,15 +70,12 @@ class DownloadImages extends Command
             if ($status === 'active') {
 
                 foreach ($variants as $index => $variant) {
-
                     $currentRow++;
-
-                    if ($currentRow <= $fileEntry->processed_rows) {
-                        continue;
-                    }
-
                      // Skip if 'Variant Image' is empty
                     if (empty($variant[$default_column_for_variant_img]) ) {
+
+                        // That if script processed at nth variant last time and it will start again from nth variant but
+                        // we dont want to process current variant right now, instead we need to skip to next main product
                         if($index != 0){
                             continue; //if it is 3rd or 4th variant and variant img is not present, then skip this row
                         }
@@ -78,21 +83,23 @@ class DownloadImages extends Command
                             $default_column_for_variant_img = "Image Src";
                         }
                     }
-                    dump($totalDownloads);
                     $this->getImagePath($variant[$default_column_for_variant_img], $totalDownloads);
 
                     if ($totalDownloads >= $batchSize) {
-                        $fileEntry->processed_rows = $currentRow;
+                        $fileEntry->processed_products = $count;
                         $fileEntry->save();
                         $this->info("Downloaded $totalDownloads images.");
                         return; // Exit the function after downloading 40 images
                     }
                 }
             }
+
+            $fileEntry->processed_products = $count;
+            $fileEntry->save();
+
         }
 
-        if ($currentRow >= $totalRows) {
-            $fileEntry->processed_rows = $currentRow;
+        if ($count >= $total_products) {
             $fileEntry->active = false;
             $fileEntry->save();
             $this->info('All entries processed. File entry marked as inactive.');
@@ -114,8 +121,8 @@ class DownloadImages extends Command
     }
 
     private function downloadImage($url, $filename, &$totalDownloads)
-    {
-        dump($url);
+    {   //return;
+        //dump($url);
         try {
             $response = Http::get($url);
             if ($response->successful()) {
@@ -133,7 +140,7 @@ class DownloadImages extends Command
                 return $imagePath;
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to download image', ['url' => $url, 'error' => $e->getMessage()]);
+            //\Log::error('Failed to download image', ['url' => $url, 'error' => $e->getMessage()]);
         }
         return null;
     }

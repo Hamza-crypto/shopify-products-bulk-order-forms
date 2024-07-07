@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('filename');
             $table->boolean('active')->default(true);
-            $table->integer('processed_rows')->default(0);
-            $table->integer('total_rows')->default(0);
+            $table->integer('processed_products')->default(0);
+            $table->integer('total_products')->default(0);
             $table->timestamps();
         });
     }

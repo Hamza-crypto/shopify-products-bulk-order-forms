@@ -25,7 +25,9 @@
                         <div class="progress mb-3">
                             @php
                                 $percentage =
-                                    $file->total_rows > 0 ? ($file->processed_rows / $file->total_rows) * 100 : 0;
+                                    $file->total_products > 0
+                                        ? ($file->processed_products / $file->total_products) * 100
+                                        : 0;
                             @endphp
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
                                 style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0"
@@ -35,7 +37,7 @@
 
 
                         </div>
-                        <p>{{ $file->processed_rows }}/{{ $file->total_rows }} ({{ round($percentage, 2) }}%)</p>
+                        <p>{{ $file->processed_products }}/{{ $file->total_products }} ({{ round($percentage, 2) }}%)</p>
                         <hr>
                     @endforeach
                 </div>
