@@ -32,7 +32,7 @@ class DownloadImages extends Command
 
     private function processCSVInChunks($filePath, $fileEntry)
     {
-        $batchSize = 70;
+        $batchSize = 150;
         $currentRow = 0;
         $totalDownloads = 0;
         $total_products = $fileEntry->total_products;

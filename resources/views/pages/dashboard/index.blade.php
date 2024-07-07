@@ -29,9 +29,9 @@
                                         ? ($file->processed_products / $file->total_products) * 100
                                         : 0;
                             @endphp
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                                style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0"
-                                aria-valuemax="100">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated {{ $percentage == 100 ? 'bg-success' : '' }}"
+                                role="progressbar" style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}"
+                                aria-valuemin="0" aria-valuemax="100">
                                 ({{ round($percentage, 2) }}%)
                             </div>
 
