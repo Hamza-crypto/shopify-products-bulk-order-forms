@@ -182,7 +182,7 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
         } else {
             foreach ($data as $key => $value) {
                 if (stripos($key, 'Price') === 0) {
-                    return $value;
+                    if($value != "") return $value;
                 }
             }
 
