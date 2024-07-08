@@ -60,17 +60,35 @@ class AdminController extends Controller
         $fileHandle = fopen($csvFile, 'r');
         $header = fgetcsv($fileHandle);
         $products = [];
+        $active_products = [];
 
-        $temp_product = [];
-        while ($row = fgetcsv($fileHandle)) {
-            //dd($row);
+        while (($row = fgetcsv($fileHandle)) !== false) {
+            $product = array_combine($header, $row);
+            $handle = $product['Handle'];
 
-            $products[] = array_combine($header, $row);
+            if (!isset($products[$handle])) {
+                $products[$handle] = [];
+            }
+
+            $products[$handle][] = $product;
+        }
+
+
+        foreach ($products as $handle => $variants) {
+            $mainProduct = $variants[0];
+
+            $status = strtolower($mainProduct['Status']);
+
+            if ($status === 'active') {
+                foreach ($variants as $variant) {
+                    $active_products[] = $variant;
+                }
+            }
+
         }
 
         fclose($fileHandle);
-
-        return $products;
+        return $active_products;
     }
 
     public function download_images(Request $request)

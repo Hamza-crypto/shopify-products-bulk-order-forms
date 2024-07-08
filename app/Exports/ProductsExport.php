@@ -69,9 +69,8 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
                 // $drawing->setheight(150);
 
                 // Center the image in the cell
-            $drawing->setOffsetX(10);  // Adjust horizontal offset
-            $drawing->setOffsetY(10);  // Adjust vertical offset
-
+                $drawing->setOffsetX(10);  // Adjust horizontal offset
+                $drawing->setOffsetY(10);  // Adjust vertical offset
 
                 $drawing->setCoordinates('A' . ($index + 2));
                 $this->drawings[] = $drawing;
@@ -82,7 +81,7 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
 
     private function getImagePath($url)
     {
-        $url .=  "&width=150";
+        $url .=  "&width=100";
         $slug = Str::slug($url);
         $filename = $slug;
 
@@ -145,7 +144,7 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
     public function columnWidths(): array
     {
         return [
-            'A' => 25,  // Set the width of the 'Image Preview' column
+            'A' => 30,  // Set the width of the 'Image Preview' column
         ];
     }
 
