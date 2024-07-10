@@ -70,6 +70,11 @@ class AdminController extends Controller
                 $products[$handle] = [];
             }
 
+            // Remove HTML tags from "Body (HTML)" field
+            if (isset($product['Body (HTML)'])) {
+                $product['Body (HTML)'] = strip_tags($product['Body (HTML)']);
+            }
+
             $products[$handle][] = $product;
         }
 
