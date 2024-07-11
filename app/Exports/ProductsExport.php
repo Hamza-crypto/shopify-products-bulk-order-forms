@@ -81,6 +81,8 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
 
     private function getImagePath($url)
     {
+        if($url == "") return;
+
         $url .=  "&width=100";
         $slug = Str::slug($url);
         $filename = $slug;
@@ -144,7 +146,7 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
     public function columnWidths(): array
     {
         return [
-            'A' => 30,  // Set the width of the 'Image Preview' column
+            'A' => 40,  // Set the width of the 'Image Preview' column
         ];
     }
 
