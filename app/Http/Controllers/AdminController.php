@@ -38,8 +38,6 @@ class AdminController extends Controller
         ]);
 
         $url = sprintf("<strong>%s</strong>", route('customer.products', ['unique_id' => $uniqueId]));
-
-
         return back()->with('success', 'File uploaded successfully! Share this URL with your customer: ' . $url);
     }
 
@@ -48,7 +46,7 @@ class AdminController extends Controller
     {
         // Read the CSV file
         $csvFile = $request->file('csv_file');
-        $products = $this->readCSV($csvFile);
+        $products = get_active_products($csvFile);
 
         // Export to Excel
         return Excel::download(new ProductsExport($products), 'products.xlsx');
@@ -78,7 +76,6 @@ class AdminController extends Controller
             $products[$handle][] = $product;
         }
 
-
         foreach ($products as $handle => $variants) {
             $mainProduct = $variants[0];
 
@@ -89,12 +86,12 @@ class AdminController extends Controller
                     $active_products[] = $variant;
                 }
             }
-
         }
 
         fclose($fileHandle);
         return $active_products;
     }
+
 
     public function download_images(Request $request)
     {
@@ -105,9 +102,10 @@ class AdminController extends Controller
         $file = $request->file('file');
         $filePath = $file->store('download_images');
 
+        $filePath_full = storage_path('app/' . $filePath);
         FileEntry::create([
             'filename' => $filePath,
-            'total_products' => $this->countCSVRows($filePath),
+            'total_products' => count(get_active_products($filePath_full)),
         ]);
 
         return back()->with('success', 'File uploaded successfully! We will let you know when all images are downloaded.');

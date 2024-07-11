@@ -128,6 +128,7 @@ Route::get('/send-test-email', function () {
 });
 
 Route::get('/test', function () {
+
     Artisan::call('images:download');
 
 });
