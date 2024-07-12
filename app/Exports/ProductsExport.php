@@ -55,12 +55,17 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
     private function prepareDrawings()
     {
         foreach ($this->products as $index => $product) {
+
             if (!empty($product['Variant Image'])) {
-                $imagePath = $this->getImagePath($product['Variant Image']);
+                $img_url = $product['Variant Image'];
             }
             else{
-                $imagePath = $this->getImagePath($product['Image Src']);
+                 $img_url = $product['Image Src'];
             }
+
+
+            $imagePath = downloadImage( $img_url )[1];
+
             if ($imagePath) {
                 $drawing = new Drawing();
                 $drawing->setName($product['Handle']);
