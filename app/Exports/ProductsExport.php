@@ -13,7 +13,6 @@ use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Illuminate\Support\Facades\Session;
 
 class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, WithDrawings, WithColumnWidths, WithStyles
 {
@@ -63,6 +62,7 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
                  $img_url = $product['Image Src'];
             }
 
+            if($img_url == "") continue;
 
             $imagePath = downloadImage( $img_url )[1];
 

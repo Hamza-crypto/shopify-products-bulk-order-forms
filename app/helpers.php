@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Http;
 if (!function_exists('downloadImage')) {
     function downloadImage($url) {
 
-        if($url == "") return;
-
         try {
             // Append width parameter to the URL
             $urlWithWidth = $url . "&width=100";
