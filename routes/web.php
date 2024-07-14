@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\MeterReadingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,5 +131,23 @@ Route::get('/send-test-email', function () {
 Route::get('/test', function () {
 
     Artisan::call('images:download');
+
+});
+
+
+/**
+ * Meter Reading
+ */
+
+ Route::get('/graph', [MeterReadingController::class, 'showElectricityGraph'])->name('electricity-graph');
+
+Route::get('/last-billed-reading', [MeterReadingController::class, 'showLastBilledReadingForm'])->name('last-billed-reading-form');
+Route::post('/last-billed-reading', [MeterReadingController::class, 'storeLastBilledReading'])->name('store-last-billed-reading');
+
+Route::get('/meter-reading', [MeterReadingController::class, 'showMeterReadingForm'])->name('meter-reading-form');
+Route::post('/meter-reading', [MeterReadingController::class, 'storeMeterReading'])->name('store-meter-reading');
+
+Route::get('/send_reading', function () {
+    Artisan::call('send-meter-reading');
 
 });

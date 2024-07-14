@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('images:download')->everyMinute();
         $schedule->command('telescope:prune --hours=48')->daily();
+        $schedule->command('send-meter-reading')->dailyAt("05:00");
     }
 
     /**

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
+use App\Models\LastBilledReading;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,5 +19,11 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        LastBilledReading::factory([
+            'reading_value' => 1000
+        ])->count(2)->create();
+
+        $this->call(MeterReadingSeeder::class);
     }
 }
