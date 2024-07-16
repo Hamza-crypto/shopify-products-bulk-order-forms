@@ -42,17 +42,17 @@
                     data.forEach((reading, index) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td class="editable" data-id="${reading.id}" data-field="reading_value">${reading.reading_value}</td>
-                            <td>${formatDate(reading.created_at)}</td>
-                            <td>${reading.difference !== null ? reading.difference : '-'}</td>
-                            <td>
-                                <form action="/meter-readings/${reading.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this reading?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                            </td>
-                        `;
+                                <td class="editable" data-id="${reading.id}" data-field="reading_value">${reading.reading_value}</td>
+                                <td>${formatDate(reading.created_at)}</td>
+                                <td>${reading.difference !== null ? reading.difference : '-'}</td>
+                                <td>
+                                    <form action="/meter-readings/${reading.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this reading?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            `;
                         tableBody.appendChild(row);
                     });
 
@@ -60,8 +60,7 @@
                     const editableCells = document.querySelectorAll('.editable');
                     editableCells.forEach(cell => {
                         cell.addEventListener('touchstart', handleCellTouchStart);
-                        cell.addEventListener('dblclick',
-                        handleCellDblClick); // For non-mobile devices
+                        cell.addEventListener('dblclick', handleCellDblClick);
                     });
                 });
         }
