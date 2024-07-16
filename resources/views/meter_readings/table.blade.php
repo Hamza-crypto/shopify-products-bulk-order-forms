@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container mt-5">
     <div class="row">
         <div class="col-md-12">
             <h3>Meter Readings for <span id="meter-name-title">Meter 1</span></h3>
-            <table class="table table-striped" border>
-                <thead>
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
                     <tr>
                         <th>Reading</th>
                         <th>Date</th>
@@ -19,9 +19,9 @@
     </div>
 </div>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
         // Function to format date to YYYY-MM-DD
         function formatDate(dateString) {
             const options = {
@@ -31,7 +31,6 @@
             };
             return new Date(dateString).toLocaleDateString('en-CA', options); // 'en-CA' for YYYY-MM-DD format
         }
-
 
         // Function to fetch and display meter readings
         function fetchMeterReadings(meterName) {
@@ -43,18 +42,17 @@
                     data.forEach(reading => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                        <td>${reading.reading_value}</td>
-
-                        <td>${formatDate(reading.created_at)}</td>
-                         <td>${reading.difference !== null ? reading.difference : '-'}</td>
-                        <td>
-                            <form action="/meter-readings/${reading.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this reading?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    `;
+                            <td>${reading.reading_value}</td>
+                            <td>${formatDate(reading.created_at)}</td>
+                            <td>${reading.difference !== null ? reading.difference : '-'}</td>
+                            <td>
+                                <form action="/meter-readings/${reading.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this reading?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        `;
                         tableBody.appendChild(row);
                     });
                 });
