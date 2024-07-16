@@ -7,6 +7,7 @@
                     <tr>
                         <th>Reading</th>
                         <th>Date</th>
+                        <th>Units Consumed</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -43,7 +44,9 @@
                         const row = document.createElement('tr');
                         row.innerHTML = `
                         <td>${reading.reading_value}</td>
+
                         <td>${formatDate(reading.created_at)}</td>
+                         <td>${reading.difference !== null ? reading.difference : '-'}</td>
                         <td>
                             <form action="/meter-readings/${reading.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this reading?');">
                                 @csrf

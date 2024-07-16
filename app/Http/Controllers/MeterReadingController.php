@@ -113,17 +113,28 @@ class MeterReadingController extends Controller
     }
 
     public function getMeterReadings($meterName)
-    {
-        $readings = MeterReading::where('meter_name', $meterName)
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($reading) {
-                $reading->created_at = Carbon::parse($reading->created_at)->format('Y-m-d');
-                return $reading;
-            });
+{
+    $readings = MeterReading::where('meter_name', $meterName)
+        ->orderBy('created_at')
+        ->get()
+        ->toArray();
 
-        return response()->json($readings);
+    $data = [];
+    $previousValue = null;
+
+    foreach ($readings as $reading) {
+        $difference = $previousValue !== null ? $reading['reading_value'] - $previousValue : null;
+        $data[] = [
+            'id' => $reading['id'],
+            'created_at' => $reading['created_at'],
+            'reading_value' => $reading['reading_value'],
+            'difference' => $difference
+        ];
+        $previousValue = $reading['reading_value'];
     }
+
+    return response()->json($data);
+}
 
     public function destroy($id)
     {
