@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meter Reading Form</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .editable-input {
+            width: 100%;
+            padding: 5px;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 
 <body>

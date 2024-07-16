@@ -148,6 +148,7 @@ Route::get('/meter-reading', [MeterReadingController::class, 'showMeterReadingFo
 Route::post('/meter-reading', [MeterReadingController::class, 'storeMeterReading'])->name('store-meter-reading');
 
 Route::get('/meter-readings/{meterName}', [MeterReadingController::class, 'getMeterReadings']);
+Route::put('/meter-readings/{id}', [MeterReadingController::class, 'update'])->name('update-meter-reading');
 Route::delete('/meter-readings/{id}', [MeterReadingController::class, 'destroy']);
 
 Route::get('/send_reading', function () {

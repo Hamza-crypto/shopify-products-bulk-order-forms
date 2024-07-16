@@ -113,29 +113,43 @@ class MeterReadingController extends Controller
     }
 
     public function getMeterReadings($meterName)
-{
-    $readings = MeterReading::where('meter_name', $meterName)
-        ->orderBy('created_at')
-        ->get()
-        ->toArray();
+    {
+        $readings = MeterReading::where('meter_name', $meterName)
+            ->orderBy('created_at')
+            ->get()
+            ->toArray();
 
-    $data = [];
-    $previousValue = null;
+        $data = [];
+        $previousValue = null;
 
-    foreach ($readings as $reading) {
-        $difference = $previousValue !== null ? $reading['reading_value'] - $previousValue : null;
-        $data[] = [
-            'id' => $reading['id'],
-            'created_at' => $reading['created_at'],
-            'reading_value' => $reading['reading_value'],
-            'difference' => $difference
-        ];
-        $previousValue = $reading['reading_value'];
+        foreach ($readings as $reading) {
+            $difference = $previousValue !== null ? $reading['reading_value'] - $previousValue : null;
+            $data[] = [
+                'id' => $reading['id'],
+                'created_at' => $reading['created_at'],
+                'reading_value' => $reading['reading_value'],
+                'difference' => $difference
+            ];
+            $previousValue = $reading['reading_value'];
+        }
+
+        return response()->json($data);
     }
 
-    return response()->json($data);
-}
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'reading_value' => 'required|numeric',
+        ]);
+
+        $meterReading = MeterReading::findOrFail($id);
+        $meterReading->update([
+            'reading_value' => $request->input('reading_value'),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
     public function destroy($id)
     {
         $reading = MeterReading::findOrFail($id);

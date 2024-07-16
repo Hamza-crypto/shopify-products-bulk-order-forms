@@ -39,10 +39,10 @@
                 .then(data => {
                     const tableBody = document.getElementById('meter-readings-table-body');
                     tableBody.innerHTML = '';
-                    data.forEach(reading => {
+                    data.forEach((reading, index) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${reading.reading_value}</td>
+                            <td class="editable" data-id="${reading.id}" data-field="reading_value">${reading.reading_value}</td>
                             <td>${formatDate(reading.created_at)}</td>
                             <td>${reading.difference !== null ? reading.difference : '-'}</td>
                             <td>
@@ -55,7 +55,77 @@
                         `;
                         tableBody.appendChild(row);
                     });
+
+                    // Add event listeners for editable cells
+                    const editableCells = document.querySelectorAll('.editable');
+                    editableCells.forEach(cell => {
+                        cell.addEventListener('touchstart', handleCellTouchStart);
+                        cell.addEventListener('dblclick',
+                        handleCellDblClick); // For non-mobile devices
+                    });
                 });
+        }
+
+        // Function to handle touch start event on a cell
+        function handleCellTouchStart(event) {
+            event.preventDefault();
+            handleCellDblClick(event);
+        }
+
+        // Function to handle double-click event on a cell
+        function handleCellDblClick(event) {
+            const cell = event.target;
+            const currentValue = cell.textContent;
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.value = currentValue;
+            input.className = 'form-control editable-input';
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+
+            input.addEventListener('blur', function() {
+                const newValue = input.value;
+                const readingId = cell.getAttribute('data-id');
+                const field = cell.getAttribute('data-field');
+
+                // Update the cell value in the database via AJAX
+                updateReadingValue(readingId, field, newValue)
+                    .then(() => {
+                        cell.innerHTML = newValue;
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        cell.innerHTML = currentValue; // Revert to original value on error
+                    });
+            });
+
+            input.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    input.blur();
+                }
+            });
+        }
+
+        // Function to update reading value via AJAX
+        async function updateReadingValue(id, field, value) {
+            const response = await fetch(`/meter-readings/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content')
+                },
+                body: JSON.stringify({
+                    [field]: value
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update reading value');
+            }
+
+            return response.json();
         }
 
         // Fetch meter readings for the selected meter
