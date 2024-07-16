@@ -92,10 +92,12 @@
                 updateReadingValue(readingId, field, newValue)
                     .then(() => {
                         cell.innerHTML = newValue;
+                        toastr.success('Reading updated successfully');
                     })
                     .catch(err => {
                         console.error(err);
                         cell.innerHTML = currentValue; // Revert to original value on error
+                        toastr.error('Failed to update reading');
                     });
             });
 
