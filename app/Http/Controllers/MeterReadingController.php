@@ -65,50 +65,70 @@ class MeterReadingController extends Controller
     }
 
     public function showElectricityGraph()
-{
-    $currentMonth = Carbon::now()->startOfMonth();
+    {
+        $currentMonth = Carbon::now()->startOfMonth();
 
-    $meter1Readings = MeterReading::where('meter_name', 'meter1')
-        ->whereDate('created_at', '>=', $currentMonth)
-        ->orderBy('created_at')
-        ->get();
+        $meter1Readings = MeterReading::where('meter_name', 'meter1')
+            ->whereDate('created_at', '>=', $currentMonth)
+            ->orderBy('created_at')
+            ->get();
 
-    $meter2Readings = MeterReading::where('meter_name', 'meter2')
-        ->whereDate('created_at', '>=', $currentMonth)
-        ->orderBy('created_at')
-        ->get();
+        $meter2Readings = MeterReading::where('meter_name', 'meter2')
+            ->whereDate('created_at', '>=', $currentMonth)
+            ->orderBy('created_at')
+            ->get();
 
-    $lastBilledReadingMeter1 = LastBilledReading::where('meter_name', 'meter1')->value('reading_value');
-    $lastBilledReadingMeter2 = LastBilledReading::where('meter_name', 'meter2')->value('reading_value');
+        $lastBilledReadingMeter1 = LastBilledReading::where('meter_name', 'meter1')->value('reading_value');
+        $lastBilledReadingMeter2 = LastBilledReading::where('meter_name', 'meter2')->value('reading_value');
 
-    $meter1Data = $this->calculateDailyUsage($meter1Readings, $lastBilledReadingMeter1);
-    $meter2Data = $this->calculateDailyUsage($meter2Readings, $lastBilledReadingMeter2);
+        $meter1Data = $this->calculateDailyUsage($meter1Readings, $lastBilledReadingMeter1);
+        $meter2Data = $this->calculateDailyUsage($meter2Readings, $lastBilledReadingMeter2);
 
-    $totalMeter1 = array_sum(array_column($meter1Data, 'usage'));
-    $totalMeter2 = array_sum(array_column($meter2Data, 'usage'));
+        $totalMeter1 = array_sum(array_column($meter1Data, 'usage'));
+        $totalMeter2 = array_sum(array_column($meter2Data, 'usage'));
 
-    return view('electricity_graph', compact(
-        'meter1Data', 'meter2Data', 'totalMeter1', 'totalMeter2'
-    ));
-}
-
-    private function calculateDailyUsage($readings, $lastBilledReading)
-{
-    $data = [];
-    $previousReading = $lastBilledReading;
-
-    foreach ($readings as $reading) {
-        $date = Carbon::parse($reading->created_at)->format('Y-m-d');
-        $dailyUsage = $reading->reading_value - $previousReading;
-
-        $data[] = [
-            'date' => $date,
-            'usage' => $dailyUsage,
-        ];
-
-        $previousReading = $reading->reading_value;
+        return view('electricity_graph', compact(
+            'meter1Data', 'meter2Data', 'totalMeter1', 'totalMeter2'
+        ));
     }
 
-    return $data;
-}
+    private function calculateDailyUsage($readings, $lastBilledReading)
+    {
+        $data = [];
+        $previousReading = $lastBilledReading;
+
+        foreach ($readings as $reading) {
+            $date = Carbon::parse($reading->created_at)->format('Y-m-d');
+            $dailyUsage = $reading->reading_value - $previousReading;
+
+            $data[] = [
+                'date' => $date,
+                'usage' => $dailyUsage,
+            ];
+
+            $previousReading = $reading->reading_value;
+        }
+
+        return $data;
+    }
+
+    public function getMeterReadings($meterName)
+    {
+        $readings = MeterReading::where('meter_name', $meterName)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($reading) {
+                $reading->created_at = Carbon::parse($reading->created_at)->format('Y-m-d');
+                return $reading;
+            });
+
+        return response()->json($readings);
+    }
+
+    public function destroy($id)
+    {
+        $reading = MeterReading::findOrFail($id);
+        $reading->delete();
+        return redirect()->back()->with('success', 'Meter reading deleted successfully.');
+    }
 }

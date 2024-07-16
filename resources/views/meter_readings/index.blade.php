@@ -23,6 +23,8 @@
         <button type="submit">Submit</button>
     </form>
 
+    <hr>
+    @include('meter_readings.table')
 </body>
 
 </html>

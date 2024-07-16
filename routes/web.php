@@ -147,6 +147,9 @@ Route::post('/last-billed-reading', [MeterReadingController::class, 'storeLastBi
 Route::get('/meter-reading', [MeterReadingController::class, 'showMeterReadingForm'])->name('meter-reading-form');
 Route::post('/meter-reading', [MeterReadingController::class, 'storeMeterReading'])->name('store-meter-reading');
 
+Route::get('/meter-readings/{meterName}', [MeterReadingController::class, 'getMeterReadings']);
+Route::delete('/meter-readings/{id}', [MeterReadingController::class, 'destroy']);
+
 Route::get('/send_reading', function () {
     Artisan::call('send-meter-reading');
 
