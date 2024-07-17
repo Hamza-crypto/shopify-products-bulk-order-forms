@@ -22,3 +22,4 @@ yarn-error.log
 public/*
 node_modules.zip
 vendor.zip
+files/*
