@@ -35,7 +35,8 @@ Route::middleware('auth')->group(function () {
 
 Route::controller(WebhookController::class)->group(function () {
     Route::get('webhook', 'webhook');
-    Route::post('webhook', 'webhook');
+    // Route::post('webhook/asana', 'webhook');
+    Route::post('webhook/asana', 'create_webhook');
 });
 
 // Route::get('migrate_fresh', function () {
@@ -155,3 +156,9 @@ Route::get('/send_reading', function () {
     Artisan::call('send-meter-reading');
 
 });
+
+
+/**
+ * Asana
+ */
+Route::post('/meter-reading', [MeterReadingController::class, 'storeMeterReading'])->name('store-meter-reading');
