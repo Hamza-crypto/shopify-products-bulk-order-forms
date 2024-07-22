@@ -4,7 +4,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -33,11 +32,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::controller(WebhookController::class)->group(function () {
-    Route::get('webhook', 'webhook');
-    // Route::post('webhook/asana', 'webhook');
-    Route::post('webhook/asana', 'create_webhook');
-});
 
 // Route::get('migrate_fresh', function () {
 //     $res = Artisan::call('migrate:fresh');
