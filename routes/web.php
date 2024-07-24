@@ -123,7 +123,7 @@ Route::get('/send-test-email', function () {
     return 'Email Sent!';
 });
 
-Route::get('/test', function () {
+Route::get('/download-images', function () {
 
     Artisan::call('images:download');
 

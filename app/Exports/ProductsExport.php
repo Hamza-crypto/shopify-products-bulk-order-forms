@@ -35,6 +35,11 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
                 $product['Body (HTML)'] ?? '',
                 $this->get_variants($product),
                 $this->get_price($product),
+                $product['Variant SKU'] ?? '',
+                $product['Variant Barcode'] ?? '',
+                $product['Vendor'] ?? '',
+                $product['Product Category'] ?? '',
+                $product['Status'] ?? '',
             ];
         }, $this->products);
     }
@@ -47,7 +52,12 @@ class ProductsExport implements FromArray, WithHeadings, WithMultipleSheets, Wit
             'Product Name',
             'Description',
             'Variant Name',
-            'Price'
+            'Price',
+            'Variant SKU',
+            'Variant Barcode',
+            'Vendor',
+            'Product Category',
+            'Status',
         ];
     }
 
