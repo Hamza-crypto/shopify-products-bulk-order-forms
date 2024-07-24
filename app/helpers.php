@@ -70,7 +70,7 @@ if (!function_exists('get_active_products')) {
             $mainProduct = $variants[0];
             $status = strtolower($mainProduct['Status']);
 
-            if ($status === 'active') {
+            // if ($status === 'active') {
                 foreach ($variants as $index => $variant) {
                     if ($index === 0 || !empty($variant['Variant Image'])) {
 
@@ -82,7 +82,7 @@ if (!function_exists('get_active_products')) {
                         $active_products[] = $variant;
                     }
                 }
-            }
+            // }
         }
 
         // Close the file handle
