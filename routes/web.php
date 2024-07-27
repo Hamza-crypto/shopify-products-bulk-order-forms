@@ -156,3 +156,9 @@ Route::get('/send_reading', function () {
  * Asana
  */
 Route::post('/meter-reading', [MeterReadingController::class, 'storeMeterReading'])->name('store-meter-reading');
+
+
+Route::get('/get_bill', function () {
+    Artisan::call('check:bills');
+
+});
