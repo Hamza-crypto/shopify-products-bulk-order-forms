@@ -118,7 +118,7 @@ Route::get('/send-test-email', function () {
         'body' => 'This is a test email sent using Hostinger SMTP settings in Laravel.'
     ];
 
-    Mail::to('6793siddique@gmail.com')->send(new \App\Mail\TestMail($details));
+    Mail::to('noorareesha162@gmail.com')->send(new \App\Mail\TestMail($details));
 
     return 'Email Sent!';
 });
