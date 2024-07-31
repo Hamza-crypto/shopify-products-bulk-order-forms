@@ -109,7 +109,7 @@ Route::post('/products/submit', [CustomerController::class, 'submitProducts'])->
 Route::post('/upload', [AdminController::class, 'generate_csv_with_images'])->name('admin.generate_directly');
 
 //store csv file for downloading images
-Route::post('/admin/download_images', [AdminController::class, 'download_images'])->name('admin.upload');
+Route::post('/admin/download_images', [AdminController::class, 'download_images'])->name('admin.download');
 Route::get('/progress', [DashboardController::class, 'showProgress'])->name('admin.show.progress');
 
 Route::get('/send-test-email', function () {
