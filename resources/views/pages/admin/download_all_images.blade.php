@@ -20,6 +20,9 @@
                     <button type="submit" class="btn btn-primary mt-3">Upload</button>
                 </form>
 
+                <form action="/progress" method="GET">
+                    <button type="submit" class="btn btn-success mt-3">See Progress</button>
+                </form>
             </div>
         </div>
     </div>
