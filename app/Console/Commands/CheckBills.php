@@ -8,6 +8,7 @@ use App\Models\Bill;
 use App\Notifications\MeterReadingNotification;
 use Illuminate\Support\Facades\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
+use Carbon\Carbon;
 
 class CheckBills extends Command
 {
@@ -22,6 +23,11 @@ class CheckBills extends Command
 
     public function handle()
     {
+         $currentDate = Carbon::now();
+        // Check if the current date is after the 27th of the month
+        if ($currentDate->day < 27) {
+            return;
+        }
 
         $client = new Client();
 

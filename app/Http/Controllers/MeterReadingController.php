@@ -114,7 +114,22 @@ class MeterReadingController extends Controller
 
     public function getMeterReadings($meterName)
     {
+       $currentDate = Carbon::now();
+
+        // Get the first day of the current month
+        $firstDayOfCurrentMonth = $currentDate->copy()->startOfMonth();
+
+        // Get the 27th of the previous month
+        $previousMonth = Carbon::now()->subMonths(1);
+
+        $twentySeventhOfPreviousMonth = $previousMonth->copy()->day(27);
+dd($previousMonth, $firstDayOfCurrentMonth, $twentySeventhOfPreviousMonth);
+        // Get all readings from 27th of previous month and current month
         $readings = MeterReading::where('meter_name', $meterName)
+            ->where(function ($query) use ($twentySeventhOfPreviousMonth, $firstDayOfCurrentMonth) {
+                $query->where('created_at', '>', $twentySeventhOfPreviousMonth)
+                    ->orWhere('created_at', '>=', $firstDayOfCurrentMonth);
+            })
             ->orderBy('created_at')
             ->get()
             ->toArray();

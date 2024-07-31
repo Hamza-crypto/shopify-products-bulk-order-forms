@@ -2,8 +2,11 @@
 <div class="row">
     <div class="col-12 col-lg-12">
         <div class="card">
-
+            <div class="card-header">
+                <small>Upload new products file here so that system can download all the images in advance.</small>
+            </div>
             <div class="card-body">
+
                 <form action="{{ route('admin.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
