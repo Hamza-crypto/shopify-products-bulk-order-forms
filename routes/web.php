@@ -162,3 +162,5 @@ Route::get('/get_bill', function () {
     Artisan::call('check:bills');
 
 });
+
+//test
