@@ -21,6 +21,10 @@ use App\Http\Controllers\MeterReadingController;
 |
 */
 
+Route::get('test-server', function () {
+    dump('Correct Server');
+});
+
 Route::get('/dashboard', function () {
     return view('pages.dashboard.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
